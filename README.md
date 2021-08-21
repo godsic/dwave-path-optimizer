@@ -1,4 +1,4 @@
-# Path Optimization Using D-Wave Leap
+# Path Optimization Using [D-Wave Leap™](https://cloud.dwavesys.com/leap/)
 
 ## The Problem
 Release payload at the given point and make sure it visits as much recipients as possible within its working range.
@@ -6,22 +6,22 @@ Release payload at the given point and make sure it visits as much recipients as
 ## Prerequisites
 - `Python 3` with `pipenv`;
 - `Qt5` for cross-platform HiDPI-friendly visualization support via `matplotlib`;
-- register at [D-Wave Leap](https://cloud.dwavesys.com/leap/) and obtain corresponding API key;
+- register at [D-Wave Leap™](https://cloud.dwavesys.com/leap/) and obtain corresponding API key;
 - configure environment with [dwave CLI](https://docs.ocean.dwavesys.com/en/stable/docs_cli.html#cli-example-config)  providing the API key when asked:
     ```bash
     dwave config create
     ```
-- clone this repo 
+- clone this repo
     ```bash
-    git clone https://github.com/godsic/path-optimizer-for-dwave.git && cd path-optimizer-for-dwave
+    git clone https://github.com/godsic/dwave-path-optimizer.git && cd dwave-path-optimizer
     ```
-- configure Python environment with [D-Wave Ocean SDK](https://docs.ocean.dwavesys.com/en/stable/) by running the following command:
+- configure Python environment with [D-Wave Ocean™ SDK](https://docs.ocean.dwavesys.com/en/stable/) by running the following command:
     ```bash
     pipenv install
     ```
 
 ## Usage
-Simply execute 
+Simply execute
 ```bash
 pipenv run ./path-optimizer.py
 ```
@@ -42,16 +42,16 @@ The problem parameters are
 The quality of the solution is determined by
 
 - `l_g` - weight of the goal function;
-- `l_I` - weight of number of taken segmets maximizer;
+- `l_I` - weight of number of taken segments maximizer;
 - `l_II` - weight of discontinuous routes penalties;
-- `l_III` - weight of the segmets-per-target constrain;
+- `l_III` - weight of the segments-per-target constrain;
 - `l_IV` - weight of starting point constrain.
 
 ## The Model
 
 ### Goal function
 
-The total traveled distance is 
+The total traveled distance is
 $$
     L = \sum_{i=0}^N{L_i x_i}
 $$
@@ -77,15 +77,15 @@ $$
 $x_i^2 = x_i = x_i x_i$ and omitting constant terms we arrive at the following goal function
 
 $$
-    \sum_{i=0}^N{l_i(l_i - 2)x_i x_i} + \sum_{i=0}^N{\sum_{j>i}^N{2 l_i l_j x_i x_j}} 
+    \sum_{i=0}^N{l_i(l_i - 2)x_i x_i} + \sum_{i=0}^N{\sum_{j>i}^N{2 l_i l_j x_i x_j}}
 $$
 
 That corresponds to the following QUBO matrix
 $$
-Q_{ij}^G = 
+Q_{ij}^G =
 \begin{cases}
     l_i(l_i - 2) & \text{$i = j$}\\
-    2 l_i l_j & \text{$i \neq j$} 
+    2 l_i l_j & \text{$i \neq j$}
 \end{cases}
 $$
 
@@ -100,18 +100,18 @@ The number of segments taken during the trip is given by
 $$
     n = \sum_{i=0}^N{x_i}
 $$
-So the corresponding constraint could be expressed as 
+So the corresponding constraint could be expressed as
 $$
     - \lambda_{I}\sum_{i=0}^N{x_i}
 $$
-where $\lambda_{I}$ is the Lagrangian parameter. 
+where $\lambda_{I}$ is the Lagrangian parameter.
 
 So we arrive at following QUBO matrix
 $$
-Q_{ij}^I = 
+Q_{ij}^I =
 \begin{cases}
     -\lambda_{I} & \text{$i = j$}\\
-    0 & \text{$i \neq j$} 
+    0 & \text{$i \neq j$}
 \end{cases}
 $$
 
@@ -127,10 +127,10 @@ $$
 $$
 where
 $$
-D_{ij} = 
+D_{ij} =
 \begin{cases}
     0 & \text{if $i$ and $j$ are $incident$}\\
-    1 & \text{if $i$ and $j$ are $not\ incident$} 
+    1 & \text{if $i$ and $j$ are $not\ incident$}
 \end{cases}
 $$
 
@@ -155,11 +155,11 @@ $$
     Q_{ij}^{III}=
     \begin{cases}
     \lambda_{III} (-2\delta_{ij} + 2 (1 - \delta_{ij}))& \text{if $i$ and $j$ are $incident$} \\
-    0 & \text{if $i$ and $j$ are $not\ incident$} 
+    0 & \text{if $i$ and $j$ are $not\ incident$}
 \end{cases}
 $$
 
-which effectively prescribes $1.5$ edges per target. 
+which effectively prescribes $1.5$ edges per target.
 
 Applying only the third constrain to the example datasets leads to $9$ segments taken with a total distance of $513.111$ units and the path is closed as expected, i.e.:
 
@@ -173,16 +173,16 @@ $$
     Q_{ij}^{III}=
     \begin{cases}
     - \lambda_{III} \delta_{ij} & \text{if $s \in i$} \\
-    0 & \text{if $s \notin i$} 
+    0 & \text{if $s \notin i$}
     \end{cases}
 $$
 
 where
 $$
-D_{ij} = 
+D_{ij} =
 \begin{cases}
     0 & \text{if segments $i$ and $j$ are $connected$}\\
-    1 & \text{if segments $i$ and $j$ are $not\ connected$} 
+    1 & \text{if segments $i$ and $j$ are $not\ connected$}
 \end{cases}
 $$
 
@@ -194,9 +194,9 @@ Applying only the second constrain to the example datasets leads to $11$ segment
 
 Summarizing the above goal and constraints we arrive at the following QUBO matrix
 $$
-Q_{ij} = Q_{ij}^G + Q_{ij}^I + Q_{ij}^{II} + Q_{ij}^{III} = 
+Q_{ij} = Q_{ij}^G + Q_{ij}^I + Q_{ij}^{II} + Q_{ij}^{III} =
 \begin{cases}
     l_i(l_i - 2) - \lambda^{I} & \text{$i = j$}\\
-    2 l_i l_j + \lambda^{II}D_{ij} & \text{$i \neq j$} 
+    2 l_i l_j + \lambda^{II}D_{ij} & \text{$i \neq j$}
 \end{cases}
 $$
