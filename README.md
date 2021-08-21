@@ -1,5 +1,8 @@
 # Path Optimization Using D-Wave Leap
 
+## The Problem
+Release payload at the given point and make sure it visits as much recipients as possible within its working range.
+
 ## Prerequisites
 - `Python 3` with `pipenv`;
 - `Qt5` for cross-platform HiDPI-friendly visualization support via `matplotlib`;
